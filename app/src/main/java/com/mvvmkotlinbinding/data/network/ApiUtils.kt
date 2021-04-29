@@ -1,17 +1,19 @@
-package com.mvvmkotlinbinding.data.network;
+package com.mvvmkotlinbinding.data.network
 
-import com.google.gson.JsonObject;
+import com.google.gson.JsonObject
+import retrofit2.Call
+import retrofit2.http.Body
+import retrofit2.http.POST
 
-import retrofit2.Call;
-import retrofit2.http.*;
-
-public interface ApiUtils {
-    String HOST = "http://3.218.105.239:3000/";
-    String URL_MASTER = HOST + "api/";
-
+interface ApiUtils {
     @POST("loginFB")
-    Call<JsonObject> fbLogin(@Body JsonObject obj);
+    fun fbLogin(@Body obj: JsonObject?): Call<JsonObject?>?
 
     @POST("loginINSTA")
-    Call<JsonObject> instaLogin(@Body JsonObject obj);
+    fun instaLogin(@Body obj: JsonObject?): Call<JsonObject?>?
+
+    companion object {
+        const val HOST = "http://3.218.105.239:3000/"
+        const val URL_MASTER = HOST + "api/"
+    }
 }

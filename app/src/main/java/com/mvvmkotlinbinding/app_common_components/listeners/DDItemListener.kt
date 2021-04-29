@@ -1,7 +1,5 @@
-package com.mvvmkotlinbinding.app_common_components.listeners;
+package com.mvvmkotlinbinding.app_common_components.listeners
 
-import androidx.annotation.Nullable;
-
-public interface DDItemListener<T> {
-    void onItemClicked(@Nullable T data, int position, int ddType);
+interface DDItemListener<T> {
+    fun onItemClicked(data: T?, position: Int, ddType: Int)
 }

@@ -1,6 +1,5 @@
-package com.mvvmkotlinbinding.app_common_components.listeners;
+package com.mvvmkotlinbinding.app_common_components.listeners
 
-public interface ConfirmationDialogListener {
-
-    void onOkClicked();
+interface ConfirmationDialogListener {
+    fun onOkClicked()
 }

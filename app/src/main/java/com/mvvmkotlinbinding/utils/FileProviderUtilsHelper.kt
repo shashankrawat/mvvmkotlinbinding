@@ -1,12 +1,10 @@
-package com.mvvmkotlinbinding.utils;
+package com.mvvmkotlinbinding.utils
 
-
-import androidx.core.content.FileProvider;
-
-public interface FileProviderUtilsHelper {
-
-    /**
-     * The provider URI for the {@link FileProvider}
-     */
-    String CAMERA_URI_AUTHORITIES = "com.mvvmwithdatabinding.provider";
+interface FileProviderUtilsHelper {
+    companion object {
+        /**
+         * The provider URI for the [FileProvider]
+         */
+        const val CAMERA_URI_AUTHORITIES = "com.mvvmwithdatabinding.provider"
+    }
 }

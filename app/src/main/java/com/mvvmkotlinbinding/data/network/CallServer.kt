@@ -1,62 +1,58 @@
-package com.mvvmkotlinbinding.data.network;
+package com.mvvmkotlinbinding.data.network
 
+import com.mvvmkotlinbinding.data.network.ApiUtils
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
-import androidx.annotation.NonNull;
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+class CallServer private constructor() {
+    private var utils: ApiUtils? = null
+    private fun buildRetrofitServices() {
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
 
-import java.util.concurrent.TimeUnit;
+        val client: OkHttpClient = OkHttpClient().newBuilder()
+            .connectTimeout(20, TimeUnit.SECONDS)
+            .readTimeout(20, TimeUnit.SECONDS)
+            .writeTimeout(60, TimeUnit.SECONDS)
+            .addInterceptor(interceptor).build()
 
-public class CallServer {
-    private static CallServer instance;
+        utils = Retrofit.Builder()
+            .baseUrl(ApiUtils.URL_MASTER)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
+            .build()
+            .create(ApiUtils::class.java)
+    }
 
-    private ApiUtils utils;
-    public static String serverError = "Server could not reach, please try again later.";
+    val aPIName: ApiUtils
+        get() = utils!!
 
+    companion object {
+        private var instance: CallServer? = null
+        var serverError = "Server could not reach, please try again later."
+
+        /**
+         * @return The instance of this Singleton
+         */
+        fun get(): CallServer? {
+            if (instance == null) {
+                synchronized(CallServer::class.java) {
+                    if (instance == null) {
+                        instance = CallServer()
+                    }
+                }
+            }
+            return instance
+        }
+    }
 
     /**
      * Constructor
      */
-    private CallServer() {
-        buildRetrofitServices();
-    }
-
-    /**
-     * @return The instance of this Singleton
-     */
-    public static CallServer get() {
-        if (instance == null) {
-            synchronized (CallServer.class) {
-                if (instance == null) {
-                    instance = new CallServer();
-                }
-            }
-        }
-        return instance;
-    }
-
-    private void buildRetrofitServices() {
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        OkHttpClient client = new OkHttpClient
-                .Builder()
-                .connectTimeout(20, TimeUnit.SECONDS)
-                .readTimeout(20, TimeUnit.SECONDS)
-                .writeTimeout(60, TimeUnit.SECONDS)
-                .addInterceptor(interceptor).build();
-
-        this.utils = new Retrofit.Builder()
-                .baseUrl(ApiUtils.URL_MASTER)
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(client)
-                .build()
-                .create(ApiUtils.class);
-    }
-
-    @NonNull
-    public ApiUtils getAPIName() {
-        return utils;
+    init {
+        buildRetrofitServices()
     }
 }

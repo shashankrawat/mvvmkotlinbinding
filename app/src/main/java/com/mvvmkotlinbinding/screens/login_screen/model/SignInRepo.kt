@@ -1,103 +1,99 @@
-package com.mvvmkotlinbinding.screens.login_screen.model;
+package com.mvvmkotlinbinding.screens.login_screen.model
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import com.google.gson.JsonObject
+import com.mvvmkotlinbinding.app_common_components.app_abstracts.BaseRepo
+import com.mvvmkotlinbinding.data.data_beans.LoginBean
+import com.mvvmkotlinbinding.data.network.CallServer
+import com.mvvmkotlinbinding.data.network.Resource
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
-import com.google.gson.JsonObject;
-import com.mvvmkotlinbinding.app_common_components.app_abstracts.BaseRepo;
-import com.mvvmkotlinbinding.data.data_beans.LoginBean;
-import com.mvvmkotlinbinding.data.network.CallServer;
-import com.mvvmkotlinbinding.data.network.Resource;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-public class SignInRepo extends BaseRepo
+class SignInRepo : BaseRepo()
 {
-
-    public static SignInRepo get() {
-        return new SignInRepo();
+    companion object {
+        @JvmStatic
+        fun get(): SignInRepo {
+            return SignInRepo()
+        }
     }
 
-
-    public LiveData<Resource<String>> FBSignIn(JsonObject obj)
-    {
-        final MutableLiveData<Resource<String>> data = new MutableLiveData<>();
-        data.setValue(Resource.loading(null));
-
-        CallServer.get().getAPIName().fbLogin(obj).enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
-                if (response.isSuccessful()) {
+    fun FBSignIn(obj: JsonObject?): LiveData<Resource<String>> {
+        val data = MutableLiveData<Resource<String>>()
+        data.value = Resource.loading(null)
+        CallServer.get()?.aPIName?.fbLogin(obj)?.enqueue(object : Callback<JsonObject?> {
+            override fun onResponse(call: Call<JsonObject?>, response: Response<JsonObject?>) {
+                if (response.isSuccessful) {
                     if (response.body() != null) {
-                        if (response.body().get("error").getAsString().equalsIgnoreCase("false"))
-                        {
-//                            UserSessionImpl.getInstance().saveUserData(response.body().get("userInfo").getAsJsonObject().toString());
-//                            UserSessionImpl.getInstance().saveUserToken(response.body().get("token").getAsString());
-
-                            data.setValue(Resource.success(response.body().get("message").getAsString()));
-                        } else
-                            data.setValue(Resource.error(response.body().get("message").getAsString(), null, 0, null));
+                        if (response.body()!!["error"].asString.equals(
+                                "false",
+                                ignoreCase = true
+                            )
+                        ) {
+    //                            UserSessionImpl.getInstance().saveUserData(response.body().get("userInfo").getAsJsonObject().toString());
+    //                            UserSessionImpl.getInstance().saveUserToken(response.body().get("token").getAsString());
+                            data.setValue(
+                                Resource.success(
+                                    response.body()!!["message"].asString
+                                )
+                            )
+                        } else data.setValue(
+                            Resource.error(
+                                response.body()!!["message"].asString, null, 0, null
+                            )
+                        )
                     }
-
-                } else
-                    data.setValue(Resource.<String>error(response.message(), null, 0, null));
-
+                } else data.setValue(Resource.error(response.message(), null, 0, null))
             }
 
-            @Override
-            public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
-
-                data.setValue(Resource.<String>error(CallServer.serverError, null, 0, t));
-
+            override fun onFailure(call: Call<JsonObject?>, t: Throwable) {
+                data.value = Resource.error(CallServer.serverError, null, 0, t)
             }
-        });
-        return data;
+        })
+        return data
     }
 
-
-    public LiveData<Resource<String>> InstaSignIn(JsonObject obj)
-    {
-        final MutableLiveData<Resource<String>> data = new MutableLiveData<>();
-        data.setValue(Resource.<String>loading(null));
-
-        CallServer.get().getAPIName().instaLogin(obj).enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
-                if (response.isSuccessful()) {
+    fun InstaSignIn(obj: JsonObject?): LiveData<Resource<String>> {
+        val data = MutableLiveData<Resource<String>>()
+        data.value = Resource.loading(null)
+        CallServer.get()?.aPIName?.instaLogin(obj)?.enqueue(object : Callback<JsonObject?> {
+            override fun onResponse(call: Call<JsonObject?>, response: Response<JsonObject?>) {
+                if (response.isSuccessful) {
                     if (response.body() != null) {
-                        if (response.body().get("error").getAsString().equalsIgnoreCase("false"))
-                        {
-                            data.setValue(Resource.success(response.body().get("message").getAsString()));
-                        } else
-                            data.setValue(Resource.<String>error(response.body().get("message").getAsString(), null, 0, null));
+                        if (response.body()!!["error"].asString.equals(
+                                "false",
+                                ignoreCase = true
+                            )
+                        ) {
+                            data.setValue(
+                                Resource.success(
+                                    response.body()!!["message"].asString
+                                )
+                            )
+                        } else data.setValue(
+
+                            Resource.error(
+                                response.body()!!["message"].asString, null, 0, null
+                            )
+                        )
                     }
-
-                } else
-                    data.setValue(Resource.<String>error(response.message(), null, 0, null));
-
+                } else data.setValue(Resource.error(response.message(), null, 0, null))
             }
 
-            @Override
-            public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
-
-                data.setValue(Resource.<String>error(CallServer.serverError, null, 0, t));
-
+            override fun onFailure(call: Call<JsonObject?>, t: Throwable) {
+                data.value = Resource.error(CallServer.serverError, null, 0, t)
             }
-        });
-        return data;
+        })
+        return data
     }
 
-    public LiveData<Resource<LoginBean>> signInUser(LoginBean obj)
-    {
-        final MutableLiveData<Resource<LoginBean>> data = new MutableLiveData<>();
-        data.setValue(Resource.loading(null));
-
-        data.setValue(Resource.success(obj));
-
-        return data;
+    fun signInUser(obj: LoginBean?): LiveData<Resource<LoginBean>> {
+        val data = MutableLiveData<Resource<LoginBean>>()
+        data.value = Resource.loading(null)
+        data.value = Resource.success(obj)
+        return data
     }
 
 }

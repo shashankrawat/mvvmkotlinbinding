@@ -1,71 +1,45 @@
-package com.mvvmkotlinbinding.screens.login_screen.view_model;
+package com.mvvmkotlinbinding.screens.login_screen.view_model
 
-import android.app.Application;
+import android.app.Application
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Transformations
+import com.mvvmkotlinbinding.app_common_components.app_abstracts.BaseViewModel
+import com.mvvmkotlinbinding.data.data_beans.ErrorBean
+import com.mvvmkotlinbinding.data.data_beans.LoginBean
+import com.mvvmkotlinbinding.data.network.Resource
+import com.mvvmkotlinbinding.screens.login_screen.model.SignInRepo.Companion.get
 
-import androidx.annotation.NonNull;
-import androidx.arch.core.util.Function;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Transformations;
-
-import com.google.gson.JsonObject;
-import com.mvvmkotlinbinding.data.data_beans.ErrorBean;
-import com.mvvmkotlinbinding.data.data_beans.LoginBean;
-import com.mvvmkotlinbinding.data.network.Resource;
-import com.mvvmkotlinbinding.app_common_components.app_abstracts.BaseViewModel;
-import com.mvvmkotlinbinding.screens.login_screen.model.SignInRepo;
-
-public class SignInViewModel extends BaseViewModel
-{
-    private SignInForm signInForm;
-
-    private LiveData<Resource<String>> fbSignInLD;
-    private LiveData<Resource<String>> instaSignInLD;
-    private LiveData<Resource<LoginBean>> loginLD;
-
-    public SignInViewModel(@NonNull Application application) {
-        super(application);
-        signInForm = new SignInForm();
-        fbSignInLD = Transformations.switchMap(signInForm.getFBSignData(), new Function<JsonObject, LiveData<Resource<String>>>() {
-            @Override
-            public LiveData<Resource<String>> apply(JsonObject input) {
-                return SignInRepo.get().FBSignIn(input);
-            }
-        });
-
-        instaSignInLD = Transformations.switchMap(signInForm.getInstaSignData(), new Function<JsonObject, LiveData<Resource<String>>>() {
-            @Override
-            public LiveData<Resource<String>> apply(JsonObject input) {
-                return SignInRepo.get().InstaSignIn(input);
-            }
-        });
-
-        loginLD = Transformations.switchMap(signInForm.getLoginData(), new Function<LoginBean, LiveData<Resource<LoginBean>>>() {
-            @Override
-            public LiveData<Resource<LoginBean>> apply(LoginBean input) {
-                return SignInRepo.get().signInUser(input);
-            }
-        });
+class SignInViewModel(application: Application) : BaseViewModel(application) {
+    val form: SignInForm
+    private val fbSignInLD: LiveData<Resource<String>>
+    private val instaSignInLD: LiveData<Resource<String>>
+    private val loginLD: LiveData<Resource<LoginBean>>
+    fun fbSignIn(): LiveData<Resource<String>> {
+        return fbSignInLD
     }
 
-
-
-    public LiveData<Resource<String>> fbSignIn() {
-        return fbSignInLD;
+    fun instaSignIn(): LiveData<Resource<String>> {
+        return instaSignInLD
     }
 
-    public LiveData<Resource<String>> instaSignIn() {
-        return instaSignInLD;
+    fun observeLogin(): LiveData<Resource<LoginBean>> {
+        return loginLD
     }
 
-    public LiveData<Resource<LoginBean>> observeLogin() {
-        return loginLD;
-    }
-    public SignInForm getForm(){
-        return signInForm;
+    fun observeErrorData(): LiveData<ErrorBean> {
+        return form.errorData
     }
 
-
-    public LiveData<ErrorBean> observeErrorData() {
-        return signInForm.getErrorData();
+    init {
+        form = SignInForm()
+        fbSignInLD = Transformations.switchMap(
+            form.fBSignData
+        ) { input -> get().FBSignIn(input) }
+        instaSignInLD = Transformations.switchMap(
+            form.instaSignData
+        ) { input -> get().InstaSignIn(input) }
+        loginLD = Transformations.switchMap(
+            form.loginData
+        ) { input -> get().signInUser(input) }
     }
 }

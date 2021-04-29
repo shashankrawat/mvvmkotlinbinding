@@ -1,96 +1,78 @@
-package com.mvvmkotlinbinding.app_common_components.dialogs;
+package com.mvvmkotlinbinding.app_common_components.dialogs
 
-import android.app.Dialog;
-import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.app.Dialog
+import android.os.Bundle
+import android.text.TextUtils
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import com.mvvmkotlinbinding.app_common_components.app_abstracts.BaseDialogFragment
+import com.mvvmkotlinbinding.app_common_components.listeners.ConfirmationDialogListener
+import com.mvvmwithdatabinding.R
+import com.mvvmwithdatabinding.databinding.DialogConfirmationViewBinding
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.mvvmkotlinbinding.app_common_components.app_abstracts.BaseDialogFragment;
-import com.mvvmkotlinbinding.app_common_components.listeners.ConfirmationDialogListener;
-import com.mvvmwithdatabinding.R;
-import com.mvvmwithdatabinding.databinding.DialogConfirmationViewBinding;
-
-import org.jetbrains.annotations.NotNull;
-
-public class ConfirmationDialog extends BaseDialogFragment implements View.OnClickListener {
-
-    public static final String TAG = "ConfirmationDialog";
-
-    private String titleText, msg;
-    private ConfirmationDialogListener listener;
-    private DialogConfirmationViewBinding binding;
-
-    public static ConfirmationDialog getInstance(Bundle args) {
-        ConfirmationDialog dialog = new ConfirmationDialog();
-        dialog.setArguments(args);
-        return dialog;
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Bundle args = getArguments();
-        if(args != null){
-            titleText = args.getString("TITLE");
-            msg = args.getString("MESSAGE");
+class ConfirmationDialog : BaseDialogFragment(), View.OnClickListener {
+    private var titleText: String? = null
+    private var msg: String? = null
+    private var listener: ConfirmationDialogListener? = null
+    private var binding: DialogConfirmationViewBinding? = null
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val args = arguments
+        if (args != null) {
+            titleText = args.getString("TITLE")
+            msg = args.getString("MESSAGE")
         }
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = DialogConfirmationViewBinding.inflate(inflater, container, false);
-        return binding.getRoot();
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = DialogConfirmationViewBinding.inflate(inflater, container, false)
+        return binding!!.root
     }
 
-    public void setListener(ConfirmationDialogListener listener) {
-        this.listener = listener;
+    fun setListener(listener: ConfirmationDialogListener?) {
+        this.listener = listener
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        if(!TextUtils.isEmpty(titleText)) {
-            binding.titleText.setText(titleText);
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        if (!TextUtils.isEmpty(titleText)) {
+            binding!!.titleText.text = titleText
         }
-        if(!TextUtils.isEmpty(msg)) {
-            binding.titleDesc.setText(msg);
+        if (!TextUtils.isEmpty(msg)) {
+            binding!!.titleDesc.text = msg
         }
-
-        binding.yes.setOnClickListener(this);
-        binding.no.setOnClickListener(this);
-
+        binding!!.yes.setOnClickListener(this)
+        binding!!.no.setOnClickListener(this)
     }
 
-    @NotNull
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        setCancelable(false);
-        return super.onCreateDialog(savedInstanceState);
-
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        isCancelable = false
+        return super.onCreateDialog(savedInstanceState)
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.yes:
+    override fun onClick(v: View) {
+        when (v.id) {
+            R.id.yes -> {
                 if (listener != null) {
-                    listener.onOkClicked();
+                    listener!!.onOkClicked()
                 }
-                dismiss();
-                break;
-
-            case R.id.no:
-                dismiss();
-                break;
+                dismiss()
+            }
+            R.id.no -> dismiss()
         }
     }
 
+    companion object {
+        const val TAG = "ConfirmationDialog"
+        fun getInstance(args: Bundle?): ConfirmationDialog {
+            val dialog = ConfirmationDialog()
+            dialog.arguments = args
+            return dialog
+        }
+    }
 }

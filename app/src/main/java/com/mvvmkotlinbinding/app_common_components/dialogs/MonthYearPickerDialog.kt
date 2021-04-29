@@ -1,101 +1,93 @@
-package com.mvvmkotlinbinding.app_common_components.dialogs;
+package com.mvvmkotlinbinding.app_common_components.dialogs
 
-import android.app.DatePickerDialog;
-import android.app.Dialog;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
+import android.app.DatePickerDialog.OnDateSetListener
+import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.Window
+import com.mvvmkotlinbinding.app_common_components.app_abstracts.BaseDialogFragment
+import com.mvvmwithdatabinding.R
+import com.mvvmwithdatabinding.databinding.DialogMonthYearPickerBinding
+import java.util.*
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.mvvmkotlinbinding.app_common_components.app_abstracts.BaseDialogFragment;
-import com.mvvmwithdatabinding.R;
-import com.mvvmwithdatabinding.databinding.DialogMonthYearPickerBinding;
-
-import java.util.Calendar;
-
-public class MonthYearPickerDialog extends BaseDialogFragment implements View.OnClickListener {
-    public static final String TAG = "MonthYearPickerDialog";
-    private DatePickerDialog.OnDateSetListener listener;
-    private DialogMonthYearPickerBinding binding;
-
-
-    public static MonthYearPickerDialog getInstance() {
-        return new MonthYearPickerDialog();
+class MonthYearPickerDialog : BaseDialogFragment(), View.OnClickListener {
+    private var listener: OnDateSetListener? = null
+    private var binding: DialogMonthYearPickerBinding? = null
+    fun setListener(listener: OnDateSetListener?) {
+        this.listener = listener
     }
 
-    public void setListener(DatePickerDialog.OnDateSetListener listener) {
-        this.listener = listener;
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = DialogMonthYearPickerBinding.inflate(inflater, container, false)
+        return binding!!.root
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = DialogMonthYearPickerBinding.inflate(inflater, container, false);
-        return binding.getRoot();
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val cal = Calendar.getInstance()
+        binding!!.pickerMonth.minValue = 1
+        binding!!.pickerMonth.maxValue = 12
+        binding!!.pickerMonth.value = cal[Calendar.MONTH] + 1
+        val year = cal[Calendar.YEAR]
+        binding!!.pickerYear.minValue = 1900
+        binding!!.pickerYear.maxValue = year
+        binding!!.pickerYear.value = year
+        binding!!.okBtn.setOnClickListener(this)
+        binding!!.cancelBtn.setOnClickListener(this)
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        Calendar cal = Calendar.getInstance();
-
-        binding.pickerMonth.setMinValue(1);
-        binding.pickerMonth.setMaxValue(12);
-        binding.pickerMonth.setValue(cal.get(Calendar.MONTH) + 1);
-
-        int year = cal.get(Calendar.YEAR);
-        binding.pickerYear.setMinValue(1900);
-        binding.pickerYear.setMaxValue(year);
-        binding.pickerYear.setValue(year);
-
-        binding.okBtn.setOnClickListener(this);
-        binding.cancelBtn.setOnClickListener(this);
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState)
+        val window = dialog.window
+        window?.requestFeature(Window.FEATURE_NO_TITLE)
+        isCancelable = false
+        return dialog
     }
 
-    @NonNull
-    @Override
-    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        Dialog dialog = super.onCreateDialog(savedInstanceState);
-        Window window = dialog.getWindow();
-        if(window != null){
-            window.requestFeature(Window.FEATURE_NO_TITLE);
-        }
-        setCancelable(false);
-        return dialog;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        Dialog dialog = getDialog();
+    override fun onStart() {
+        super.onStart()
+        val dialog = dialog
         if (dialog != null) {
-            Window window = dialog.getWindow();
-            if(window != null){
-                window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            val window = dialog.window
+            if (window != null) {
+                window.setLayout(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+                window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             }
         }
     }
 
-    @Override
-    public void onClick(View v) {
-        if(v.getId() == R.id.cancelBtn){
-            dismiss();
+    override fun onClick(v: View) {
+        if (v.id == R.id.cancelBtn) {
+            dismiss()
         }
-
-        if(v.getId() == R.id.okBtn){
+        if (v.id == R.id.okBtn) {
             if (listener != null) {
-                listener.onDateSet(null, binding.pickerYear.getValue(), binding.pickerMonth.getValue(), 0);
+                listener!!.onDateSet(
+                    null,
+                    binding!!.pickerYear.value,
+                    binding!!.pickerMonth.value,
+                    0
+                )
             }
-            dismiss();
+            dismiss()
         }
+    }
+
+    companion object {
+        const val TAG = "MonthYearPickerDialog"
+        @JvmStatic
+        val instance: MonthYearPickerDialog
+            get() = MonthYearPickerDialog()
     }
 }

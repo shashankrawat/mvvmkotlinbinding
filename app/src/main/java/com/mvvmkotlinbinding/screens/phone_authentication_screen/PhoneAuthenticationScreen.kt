@@ -1,90 +1,85 @@
-package com.mvvmkotlinbinding.screens.phone_authentication_screen;
+package com.mvvmkotlinbinding.screens.phone_authentication_screen
 
-import android.content.Context;
-import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.View;
+import android.content.Context
+import android.os.Bundle
+import android.text.TextUtils
+import android.util.Log
+import android.view.View
+import com.google.firebase.FirebaseException
+import com.google.firebase.auth.PhoneAuthCredential
+import com.google.firebase.auth.PhoneAuthProvider
+import com.google.firebase.auth.PhoneAuthProvider.ForceResendingToken
+import com.google.firebase.auth.PhoneAuthProvider.OnVerificationStateChangedCallbacks
+import com.mvvmkotlinbinding.app_common_components.app_abstracts.BaseActivity
+import com.mvvmwithdatabinding.R
+import com.mvvmwithdatabinding.databinding.PhoneAuthenticationScreenBinding
+import java.util.concurrent.TimeUnit
 
-import androidx.annotation.Nullable;
-
-import com.google.firebase.FirebaseException;
-import com.google.firebase.auth.PhoneAuthCredential;
-import com.google.firebase.auth.PhoneAuthProvider;
-import com.mvvmkotlinbinding.app_common_components.app_abstracts.BaseActivity;
-import com.mvvmwithdatabinding.R;
-import com.mvvmwithdatabinding.databinding.PhoneAuthenticationScreenBinding;
-
-import java.util.concurrent.TimeUnit;
-public class PhoneAuthenticationScreen extends BaseActivity
-{
-    private Context context;
-    private static final String TAG = "PhoneAuth";
-
-    private PhoneAuthenticationScreenBinding binding;
-    private View rootView;
-
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = PhoneAuthenticationScreenBinding.inflate(getLayoutInflater());
-        rootView = binding.getRoot();
-        setContentView(rootView);
-
-        initViews();
+class PhoneAuthenticationScreen : BaseActivity() {
+    private var context: Context? = null
+    private var binding: PhoneAuthenticationScreenBinding? = null
+    private var rootView: View? = null
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = PhoneAuthenticationScreenBinding.inflate(
+            layoutInflater
+        )
+        rootView = binding!!.root
+        setContentView(rootView)
+        initViews()
     }
 
-    private void initViews() {
-        context = this;
+    private fun initViews() {
+        context = this
     }
 
-    public void onClick(View v)
-    {
-        if (v.getId() == R.id.authenticate_btn) {
-            if (binding.authenticateBtn.getText().toString().equalsIgnoreCase(getString(R.string.send_code))) {
-                if (!TextUtils.isEmpty(binding.phoneNumberEt.getText().toString())) {
-                    if (binding.phoneNumberEt.getText().length() >= 10) {
-                        binding.passCodeEt.setVisibility(View.VISIBLE);
-                        binding.authenticateBtn.setText(getString(R.string.verify));
-                        binding.passCodeEt.requestFocus();
+    fun onClick(v: View) {
+        if (v.id == R.id.authenticate_btn) {
+            if (binding!!.authenticateBtn.text.toString()
+                    .equals(getString(R.string.send_code), ignoreCase = true)
+            ) {
+                if (!TextUtils.isEmpty(binding!!.phoneNumberEt.text.toString())) {
+                    if (binding!!.phoneNumberEt.text.length >= 10) {
+                        binding!!.passCodeEt.visibility = View.VISIBLE
+                        binding!!.authenticateBtn.text = getString(R.string.verify)
+                        binding!!.passCodeEt.requestFocus()
                     } else {
-                        showSnackBar(rootView, "Please enter a valid phone number");
+                        showSnackBar(rootView, "Please enter a valid phone number")
                     }
                 } else {
-                    showSnackBar(rootView, "Please enter a valid phone number");
+                    showSnackBar(rootView, "Please enter a valid phone number")
                 }
-            } else if (binding.authenticateBtn.getText().toString().equalsIgnoreCase(getString(R.string.verify))) {
-
+            } else if (binding!!.authenticateBtn.text.toString()
+                    .equals(getString(R.string.verify), ignoreCase = true)
+            ) {
             }
         }
     }
 
-    private void phoneAuthenticationMethod(String phoneNumber){
+    private fun phoneAuthenticationMethod(phoneNumber: String) {
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
-                phoneNumber,        // Phone number to verify
-                60,                 // Timeout duration
-                TimeUnit.SECONDS,   // Unit of timeout
-                this,               // Activity (for callback binding)
-                mCallbacks);        // OnVerificationStateChangedCallbacks
+            phoneNumber,  // Phone number to verify
+            60,  // Timeout duration
+            TimeUnit.SECONDS,  // Unit of timeout
+            this,  // Activity (for callback binding)
+            mCallbacks
+        ) // OnVerificationStateChangedCallbacks
     }
 
+    private val mCallbacks: OnVerificationStateChangedCallbacks =
+        object : OnVerificationStateChangedCallbacks() {
+            override fun onVerificationCompleted(phoneAuthCredential: PhoneAuthCredential) {
+                Log.d(TAG, "onVerificationCompleted: $phoneAuthCredential")
+                //            signInWithPhoneAuthCredential(credential);
+            }
 
-    private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-        @Override
-        public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
-            Log.d(TAG, "onVerificationCompleted: " + phoneAuthCredential);
-//            signInWithPhoneAuthCredential(credential);
+            override fun onVerificationFailed(e: FirebaseException) {}
+            override fun onCodeSent(s: String, forceResendingToken: ForceResendingToken) {
+                super.onCodeSent(s, forceResendingToken)
+            }
         }
 
-        @Override
-        public void onVerificationFailed(FirebaseException e) {
-
-        }
-
-        @Override
-        public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-            super.onCodeSent(s, forceResendingToken);
-        }
-    };
+    companion object {
+        private const val TAG = "PhoneAuth"
+    }
 }

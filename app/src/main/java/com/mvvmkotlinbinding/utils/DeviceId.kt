@@ -1,69 +1,39 @@
-package com.mvvmkotlinbinding.utils;
+package com.mvvmkotlinbinding.utils
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.os.Build;
-import android.provider.Settings;
-import android.text.TextUtils;
-import android.util.Log;
+import android.annotation.SuppressLint
+import android.content.Context
+import android.os.Build
+import android.provider.Settings
+import android.text.TextUtils
+import android.util.Log
+import com.mvvmkotlinbinding.data.app_prefs.UserSession
+import java.io.UnsupportedEncodingException
+import java.security.MessageDigest
+import java.security.NoSuchAlgorithmException
 
-import androidx.annotation.Nullable;
-
-import com.mvvmkotlinbinding.data.app_prefs.UserSession;
-
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
-public class DeviceId
-{
-    private static final String TAG = "DeviceId";
+class DeviceId
+/**
+ * Private Constructor
+ */
+private constructor() {
     /**
-     * The singleton of this class
-     */
-    private static DeviceId deviceId;
-
-    /**
-     * Private Constructor
-     */
-    private DeviceId() {
-    }
-
-    /**
-     * Called to get an instance of the DeviceId helper.
-     *
-     * @return New instance of the DeviceId helper
-     */
-    public static DeviceId getInstance()
-    {
-        if (deviceId == null) {
-            synchronized (DeviceId.class) {
-                if (deviceId == null) {
-                    deviceId = new DeviceId();
-                }
-            }
-        }
-        return deviceId;
-    }
-
-    /**
-     * Called to get the {@code String} device id for this device. It is made of a SHA-256 hash
+     * Called to get the `String` device id for this device. It is made of a SHA-256 hash
      * of unique setting on this device.
      *
      * @return The device id for this device.
      */
-    public String getDeviceId(Context context, UserSession userSession) {
-        String deviceId = userSession.getSavedDeviceId();
+    fun getDeviceId(context: Context, userSession: UserSession?): String? {
+        var deviceId = userSession?.savedDeviceId
         if (TextUtils.isEmpty(deviceId)) {
-            deviceId = createId(context);
+            deviceId = createId(context)
             if (TextUtils.isEmpty(deviceId)) {
-                return null;
+                return null
             }
             if (deviceId != null) {
-                userSession.saveDeviceId(deviceId);
+                userSession?.saveDeviceId(deviceId)
             }
         }
-        return deviceId;
+        return deviceId
     }
 
     /**
@@ -71,22 +41,48 @@ public class DeviceId
      *
      * @return The new device id.
      */
-    @Nullable
     @SuppressLint("HardwareIds")
-    private String createId(Context context) {
-        String id = Settings.Secure.getString(
-                context.getContentResolver(),
-                Settings.Secure.ANDROID_ID);
-        String device = Build.DEVICE;
-        id += device;
-
+    private fun createId(context: Context): String? {
+        var id = Settings.Secure.getString(
+            context.contentResolver,
+            Settings.Secure.ANDROID_ID
+        )
+        val device = Build.DEVICE
+        id += device
         try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            return HexCoder.toHex(md.digest(id.getBytes("UTF-8")));
-        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
-            Log.e(TAG, "createId: "+e.toString());
+            val md = MessageDigest.getInstance("SHA-256")
+            return HexCoder.toHex(md.digest(id.toByteArray(charset("UTF-8"))))
+        } catch (e: NoSuchAlgorithmException) {
+            Log.e(TAG, "createId: $e")
+        } catch (e: UnsupportedEncodingException) {
+            Log.e(TAG, "createId: $e")
         }
-        return null;
+        return null
     }
 
+    companion object {
+        private const val TAG = "DeviceId"
+
+        /**
+         * The singleton of this class
+         */
+        private var deviceId: DeviceId? = null
+
+        /**
+         * Called to get an instance of the DeviceId helper.
+         *
+         * @return New instance of the DeviceId helper
+         */
+        val instance: DeviceId?
+            get() {
+                if (deviceId == null) {
+                    synchronized(DeviceId::class.java) {
+                        if (deviceId == null) {
+                            deviceId = DeviceId()
+                        }
+                    }
+                }
+                return deviceId
+            }
+    }
 }

@@ -1,238 +1,202 @@
-package com.mvvmkotlinbinding.data.social_login;
+package com.mvvmkotlinbinding.data.social_login
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-import android.widget.Toast;
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
+import com.facebook.CallbackManager
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
+import com.facebook.GraphRequest
+import com.facebook.login.LoginManager
+import com.facebook.login.LoginResult
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.mvvmkotlinbinding.utils.CommonUtils
+import org.json.JSONException
+import org.json.JSONObject
+import java.net.MalformedURLException
+import java.net.URL
 
-import androidx.annotation.NonNull;
-
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
-import com.facebook.login.LoginManager;
-import com.facebook.login.LoginResult;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.mvvmkotlinbinding.utils.CommonUtils;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Collections;
-
-public class LoginViaSocialAccounts
-{
-    public static final int RC_SIGN_IN = 101;
-
-    private Activity mActivity;
-    private Context mContext;
-    private GoogleSignInClient mGoogleSignInClient;
-    private SocialLoginResponseHandler mSocialResponseHandler;
-    private CallbackManager callbackManager;
-
-    public LoginViaSocialAccounts(Activity activity, SocialLoginResponseHandler socialLoginResponseHandler){
-        mActivity = activity;
-        mContext = activity;
-        mSocialResponseHandler = socialLoginResponseHandler;
-
-        initGoogleSignIn();
-        initFacebookLogin();
+class LoginViaSocialAccounts(
+    private val mActivity: Activity?,
+    socialLoginResponseHandler: SocialLoginResponseHandler
+) {
+    private val mContext: Context?
+    private var mGoogleSignInClient: GoogleSignInClient? = null
+    private val mSocialResponseHandler: SocialLoginResponseHandler
+    private var callbackManager: CallbackManager? = null
+    private fun initGoogleSignIn() {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestEmail()
+            .build()
+        mGoogleSignInClient = GoogleSignIn.getClient(mActivity!!, gso)
     }
 
-    private void initGoogleSignIn(){
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
-        mGoogleSignInClient = GoogleSignIn.getClient(mActivity, gso);
+    fun signInWithGoogle() {
+        val signInIntent = mGoogleSignInClient!!.signInIntent
+        mActivity!!.startActivityForResult(signInIntent, RC_SIGN_IN)
     }
 
-
-    public void signInWithGoogle() {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        mActivity.startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
-
-
-    public void signOutGoogleAccount(){
-        if(mActivity != null && mGoogleSignInClient != null) {
-            mGoogleSignInClient.signOut()
-                    .addOnCompleteListener(mActivity, new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            // ...
-                        }
-                    });
+    fun signOutGoogleAccount() {
+        if (mActivity != null && mGoogleSignInClient != null) {
+            mGoogleSignInClient!!.signOut()
+                .addOnCompleteListener(mActivity) {
+                    // ...
+                }
         }
     }
 
-
-    public void handleSignInResult(Intent data) {
+    fun handleSignInResult(data: Intent?) {
         try {
-            Task<GoogleSignInAccount> completedTask = GoogleSignIn.getSignedInAccountFromIntent(data);
-
-            GoogleSignInAccount acct = completedTask.getResult(ApiException.class);
-            Bundle acctData = getGoogleLoginData(acct);
-            if(acctData != null){
-                mSocialResponseHandler.onSocialLoginSuccess(acctData, "G");
-            }else {
-                mSocialResponseHandler.onSocialLoginFailure();
+            val completedTask = GoogleSignIn.getSignedInAccountFromIntent(data)
+            val acct = completedTask.getResult(ApiException::class.java)
+            val acctData = getGoogleLoginData(acct)
+            if (acctData != null) {
+                mSocialResponseHandler.onSocialLoginSuccess(acctData, "G")
+            } else {
+                mSocialResponseHandler.onSocialLoginFailure()
             }
-
-        } catch (ApiException e) {
-            mSocialResponseHandler.onSocialLoginFailure();
+        } catch (e: ApiException) {
+            mSocialResponseHandler.onSocialLoginFailure()
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
-            Log.e("G_SIGN_FAILED", "signInResult:failed code=" + e.getStatusCode()+", "+e.getMessage());
-
+            Log.e("G_SIGN_FAILED", "signInResult:failed code=" + e.statusCode + ", " + e.message)
         }
     }
 
-
-    public void signInWithFacebook(){
-        LoginManager.getInstance().logInWithReadPermissions(mActivity, Collections.singletonList("public_profile"));
+    fun signInWithFacebook() {
+        LoginManager.getInstance().logInWithReadPermissions(mActivity, listOf("public_profile"))
     }
 
-    public void signOutFBAccount(){
+    fun signOutFBAccount() {
         if (LoginManager.getInstance() != null) {
-            LoginManager.getInstance().logOut();
+            LoginManager.getInstance().logOut()
         }
     }
 
-
-    private void initFacebookLogin() {
-        callbackManager = CallbackManager.Factory.create();
+    private fun initFacebookLogin() {
+        callbackManager = CallbackManager.Factory.create()
         // Callback registration
-        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-
-                GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
-                    @Override
-                    public void onCompleted(JSONObject object, GraphResponse response) {
-                        Bundle bFacebookData = getFacebookData(object);
-
-                        if(bFacebookData != null){
-                            mSocialResponseHandler.onSocialLoginSuccess(bFacebookData, "FB");
-                        }else {
-                            mSocialResponseHandler.onSocialLoginFailure();
+        LoginManager.getInstance()
+            .registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
+                override fun onSuccess(loginResult: LoginResult) {
+                    val request =
+                        GraphRequest.newMeRequest(loginResult.accessToken) { `object`, response ->
+                            val bFacebookData = getFacebookData(`object`)
+                            if (bFacebookData != null) {
+                                mSocialResponseHandler.onSocialLoginSuccess(bFacebookData, "FB")
+                            } else {
+                                mSocialResponseHandler.onSocialLoginFailure()
+                            }
                         }
-                    }
-
-                });
-                Bundle parameters = new Bundle();
-                parameters.putString("fields", "id, first_name, last_name, email,gender, birthday"); // Parámetros que pedimos a facebook
-                request.setParameters(parameters);
-                request.executeAsync();
-            }
-
-            @Override
-            public void onCancel() {
-                Toast.makeText(mContext, "Cancelled", Toast.LENGTH_SHORT).show();
-                // App code
-            }
-
-            @Override
-            public void onError(FacebookException exception) {
-                if (!CommonUtils.isNetworkAvailable(mContext)) {
-                    Toast.makeText(mContext, "Please check your internet connection.", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(mContext, "ERROR : " + exception.toString(), Toast.LENGTH_SHORT).show();
+                    val parameters = Bundle()
+                    parameters.putString(
+                        "fields",
+                        "id, first_name, last_name, email,gender, birthday"
+                    ) // Parámetros que pedimos a facebook
+                    request.parameters = parameters
+                    request.executeAsync()
                 }
-                Log.e("FB_ERROR",""+exception.toString());
-            }
-        });
 
+                override fun onCancel() {
+                    Toast.makeText(mContext, "Cancelled", Toast.LENGTH_SHORT).show()
+                    // App code
+                }
+
+                override fun onError(exception: FacebookException) {
+                    if (!CommonUtils.isNetworkAvailable(mContext!!)) {
+                        Toast.makeText(
+                            mContext,
+                            "Please check your internet connection.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        Toast.makeText(mContext, "ERROR : $exception", Toast.LENGTH_SHORT).show()
+                    }
+                    Log.e("FB_ERROR", "" + exception.toString())
+                }
+            })
     }
 
-    private Bundle getFacebookData(JSONObject object) {
-
+    private fun getFacebookData(`object`: JSONObject): Bundle? {
         try {
-            Bundle bundle = new Bundle();
-
-            String id = object.getString("id");
-            bundle.putString("FB_id", id);
-
+            val bundle = Bundle()
+            val id = `object`.getString("id")
+            bundle.putString("FB_id", id)
             try {
-                URL profile_pic = new URL("https://graph.facebook.com/" + id + "/picture?width=200&height=150");
+                val profile_pic = URL("https://graph.facebook.com/$id/picture?width=200&height=150")
                 //  Log.e("profile_pic", profile_pic + "");
-                bundle.putString("profile_pic", profile_pic.toString());
-
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-                return null;
+                bundle.putString("profile_pic", profile_pic.toString())
+            } catch (e: MalformedURLException) {
+                e.printStackTrace()
+                return null
             }
-
-            StringBuilder personName = new StringBuilder();
-            if (object.has("first_name")){
-                personName.append(object.getString("first_name"));
+            val personName = StringBuilder()
+            if (`object`.has("first_name")) {
+                personName.append(`object`.getString("first_name"))
             }
-            if (object.has("last_name")) {
-                personName.append(" ").append(object.getString("last_name"));
+            if (`object`.has("last_name")) {
+                personName.append(" ").append(`object`.getString("last_name"))
             }
-            bundle.putString("name", personName.toString());
-
-            String fbEmail;
-            if (object.has("email")) {
-                fbEmail = object.getString("email");
-            }else {
-                fbEmail = object.getString("idFacebook") + "@facebook.com";
-            }
-            bundle.putString("email",fbEmail);
-
-            return bundle;
-        } catch (JSONException e) {
-            Log.d("ERROR", "Error parsing JSON");
-        }
-        return null;
-    }
-
-    private Bundle getGoogleLoginData(GoogleSignInAccount acct)
-    {
-        if(acct != null){
-            Bundle bundle = new Bundle();
-
-            String personName = acct.getDisplayName();
-            String personEmail = acct.getEmail();
-            String personId = acct.getId();
-
-            String personPhoto;
-            if (acct.getPhotoUrl() != null) {
-                personPhoto = acct.getPhotoUrl().toString();
+            bundle.putString("name", personName.toString())
+            val fbEmail: String
+            fbEmail = if (`object`.has("email")) {
+                `object`.getString("email")
             } else {
-                personPhoto = "";
+                `object`.getString("idFacebook") + "@facebook.com"
             }
-            bundle.putString("profile_pic", personPhoto);
-            bundle.putString("name", personName);
-            bundle.putString("email", personEmail);
-            bundle.putString("G_id", personId);
-
-            return bundle;
+            bundle.putString("email", fbEmail)
+            return bundle
+        } catch (e: JSONException) {
+            Log.d("ERROR", "Error parsing JSON")
         }
-
-        return null;
+        return null
     }
 
-
-    public void fbOnActivityResult(int requestCode, int resultCode, Intent data){
-        callbackManager.onActivityResult(requestCode, resultCode, data);
+    private fun getGoogleLoginData(acct: GoogleSignInAccount?): Bundle? {
+        if (acct != null) {
+            val bundle = Bundle()
+            val personName = acct.displayName
+            val personEmail = acct.email
+            val personId = acct.id
+            val personPhoto: String
+            personPhoto = if (acct.photoUrl != null) {
+                acct.photoUrl.toString()
+            } else {
+                ""
+            }
+            bundle.putString("profile_pic", personPhoto)
+            bundle.putString("name", personName)
+            bundle.putString("email", personEmail)
+            bundle.putString("G_id", personId)
+            return bundle
+        }
+        return null
     }
 
-
-    public interface SocialLoginResponseHandler{
-        void onSocialLoginSuccess(Bundle args, String socialType);
-        void onSocialLoginFailure();
+    fun fbOnActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        callbackManager!!.onActivityResult(requestCode, resultCode, data)
     }
 
+    interface SocialLoginResponseHandler {
+        fun onSocialLoginSuccess(args: Bundle?, socialType: String?)
+        fun onSocialLoginFailure()
+    }
+
+    companion object {
+        const val RC_SIGN_IN = 101
+    }
+
+    init {
+        mContext = mActivity
+        mSocialResponseHandler = socialLoginResponseHandler
+        initGoogleSignIn()
+        initFacebookLogin()
+    }
 }

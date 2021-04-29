@@ -1,64 +1,51 @@
-package com.mvvmkotlinbinding.screens.login_screen.view_model;
+package com.mvvmkotlinbinding.screens.login_screen.view_model
 
-import android.text.TextUtils;
-import android.util.Patterns;
+import android.text.TextUtils
+import android.util.Patterns
+import androidx.lifecycle.MutableLiveData
+import com.google.gson.JsonObject
+import com.mvvmkotlinbinding.app_common_components.app_abstracts.BaseForm
+import com.mvvmkotlinbinding.data.data_beans.LoginBean
+import com.mvvmkotlinbinding.utils.AppConstants
 
-import androidx.lifecycle.MutableLiveData;
+class SignInForm : BaseForm() {
+    @JvmField
+    var loginFields = LoginBean()
+    val loginData = MutableLiveData<LoginBean>()
+    val fBSignData = MutableLiveData<JsonObject>()
+    val instaSignData = MutableLiveData<JsonObject>()
 
-import com.google.gson.JsonObject;
-import com.mvvmkotlinbinding.data.data_beans.LoginBean;
-import com.mvvmkotlinbinding.app_common_components.app_abstracts.BaseForm;
-import com.mvvmkotlinbinding.utils.AppConstants;
-
-public class SignInForm extends BaseForm {
-    public LoginBean loginFields = new LoginBean();
-    private final MutableLiveData<LoginBean> signInData = new MutableLiveData<>();
-    private final MutableLiveData<JsonObject> fbSignInData = new MutableLiveData<>();
-    private final MutableLiveData<JsonObject> instaSignInData = new MutableLiveData<>();
-
-    public Boolean isEmailIdValid(String email) {
-        if(!TextUtils.isEmpty(email) && Patterns.EMAIL_ADDRESS.matcher(email).matches()){
-            setErrorData("", 0);
-            return true;
-        }else {
-            setErrorData("Please enter a valid Email.", AppConstants.ErrorEmail);
-            return false;
+    fun isEmailIdValid(email: String?): Boolean {
+        return if (!TextUtils.isEmpty(email) && Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            setErrorData("", 0)
+            true
+        } else {
+            setErrorData("Please enter a valid Email.", AppConstants.ErrorEmail)
+            false
         }
     }
 
-    public Boolean isPasswordValid(String pwd) {
-        if(!TextUtils.isEmpty(pwd) && pwd.length() >= 6){
-            setErrorData("", 0);
-            return true;
-        }else {
-            setErrorData("Password must be of atleast 6 letter", AppConstants.ErrorPassword);
-            return false;
+    fun isPasswordValid(pwd: String?): Boolean {
+        return if (!TextUtils.isEmpty(pwd) && pwd!!.length >= 6) {
+            setErrorData("", 0)
+            true
+        } else {
+            setErrorData("Password must be of atleast 6 letter", AppConstants.ErrorPassword)
+            false
         }
     }
 
-
-    public void setFBSignInData(JsonObject fbData){
-        fbSignInData.setValue(fbData);
-    }
-    public MutableLiveData<JsonObject> getFBSignData() {
-        return fbSignInData;
+    fun setFBSignInData(fbData: JsonObject) {
+        fBSignData.value = fbData
     }
 
-    public void setInstaSignInData(JsonObject fbData){
-        instaSignInData.setValue(fbData);
-    }
-    public MutableLiveData<JsonObject> getInstaSignData() {
-        return instaSignInData;
+    fun setInstaSignInData(fbData: JsonObject) {
+        instaSignData.value = fbData
     }
 
-    public void onSignInClick() {
-        if(isEmailIdValid(loginFields.getEmail()) && isPasswordValid(loginFields.getPassword())) {
-            signInData.setValue(loginFields);
+    fun onSignInClick() {
+        if (isEmailIdValid(loginFields.email) && isPasswordValid(loginFields.password)) {
+            loginData.value = loginFields
         }
     }
-
-    public MutableLiveData<LoginBean> getLoginData() {
-        return signInData;
-    }
-
 }

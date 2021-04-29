@@ -1,6 +1,6 @@
-package com.mvvmkotlinbinding.app_common_components.listeners;
+package com.mvvmkotlinbinding.app_common_components.listeners
 
-public interface PickerOptionsListener {
-    void onCameraOptionClick();
-    void onGalleryOptionClick();
+interface PickerOptionsListener {
+    fun onCameraOptionClick()
+    fun onGalleryOptionClick()
 }

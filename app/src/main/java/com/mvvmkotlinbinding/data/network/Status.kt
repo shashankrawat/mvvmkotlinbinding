@@ -1,8 +1,5 @@
-package com.mvvmkotlinbinding.data.network;
+package com.mvvmkotlinbinding.data.network
 
-public enum Status
-{
-    SUCCESS,
-    ERROR,
-    LOADING
+enum class Status {
+    SUCCESS, ERROR, LOADING
 }
