@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <variable
+                name="viewmodel"
+                type="com.mvvmkotlinbinding.screens.login_screen.view_model.SignInViewModel" />
+    </data>
+
+    <RelativeLayout
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context="com.mvvmkotlinbinding.screens.login_screen.SignInActivity">
+
+        <RelativeLayout
+                android:id="@+id/rl_app_logo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_20sdp">
+
+            <TextView
+                    android:id="@+id/app_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:text="@string/app_name"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="@dimen/_24sdp"
+                    android:fontFamily="@font/labelleaurore"/>
+
+            <TextView
+                    android:id="@+id/tag_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/app_name"
+                    android:layout_centerInParent="true"
+                    android:layout_marginStart="@dimen/_16sdp"
+                    android:layout_marginLeft="@dimen/_16sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_16sdp"
+                    android:layout_marginRight="@dimen/_16sdp"
+                    android:fontFamily="@font/gotham_medium"
+                    android:gravity="center"
+                    android:text="@string/sign_in_tag"
+                    android:textSize="@dimen/_15sdp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+                android:id="@+id/signin_form_rl"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@+id/term_condition_tv"
+                android:layout_below="@+id/rl_app_logo"
+                android:gravity="center">
+
+            <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/email_et"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edt_bg_1"
+                    android:padding="@dimen/_10sdp"
+                    android:layout_marginStart="@dimen/_20sdp"
+                    android:layout_marginLeft="@dimen/_20sdp"
+                    android:layout_marginEnd="@dimen/_20sdp"
+                    android:layout_marginRight="@dimen/_20sdp"
+                    android:hint="@string/email"
+                    android:inputType="textEmailAddress"
+                    android:maxLines="1"
+                    onTextChange="@{() -> viewmodel.form.loginFields.setEmail(emailEt.getText().toString())}"/>
+
+            <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/password_et"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edt_bg_1"
+                    android:padding="@dimen/_10sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_marginStart="@dimen/_20sdp"
+                    android:layout_marginLeft="@dimen/_20sdp"
+                    android:layout_marginEnd="@dimen/_20sdp"
+                    android:layout_marginRight="@dimen/_20sdp"
+                    android:hint="@string/password"
+                    android:layout_below="@id/email_et"
+                    android:inputType="textPassword"
+                    android:maxLines="1"
+                    onTextChange="@{() -> viewmodel.form.loginFields.setPassword(passwordEt.getText().toString())}"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/sign_in_btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/_10sdp"
+                    android:layout_marginTop="@dimen/_20sdp"
+                    android:layout_marginStart="@dimen/_20sdp"
+                    android:layout_marginLeft="@dimen/_20sdp"
+                    android:layout_marginEnd="@dimen/_20sdp"
+                    android:layout_marginRight="@dimen/_20sdp"
+                    android:layout_below="@id/password_et"
+                    android:text="@string/sign_in"
+                    android:background="@drawable/round_corner_bg_two"
+                    android:textColor="@color/color_white"
+                    android:onClick="@{()->viewmodel.form.onSignInClick()}"/>
+
+            <View
+                    android:id="@+id/separator_1"
+                    android:layout_width="@dimen/_1sdp"
+                    android:layout_height="@dimen/_1sdp"
+                    android:layout_below="@id/sign_in_btn"
+                    android:layout_centerHorizontal="true"/>
+
+            <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/fb_login_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/facebook"
+                    android:layout_below="@id/sign_in_btn"
+                    android:layout_toStartOf="@id/separator_1"
+                    android:layout_toLeftOf="@id/separator_1"
+                    android:layout_marginTop="@dimen/_20sdp"
+                    android:layout_marginEnd="@dimen/_5sdp"
+                    android:layout_marginRight="@dimen/_5sdp"
+                    android:onClick="onClick"/>
+
+            <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/insta_login_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/instagram"
+                    android:layout_below="@id/sign_in_btn"
+                    android:layout_toEndOf="@id/separator_1"
+                    android:layout_toRightOf="@id/separator_1"
+                    android:layout_marginTop="@dimen/_20sdp"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_marginLeft="@dimen/_5sdp"
+                    android:onClick="onClick"/>
+
+        </RelativeLayout>
+
+        <TextView
+                android:id="@+id/term_condition_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerInParent="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_marginLeft="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:layout_marginRight="@dimen/_10sdp"
+                android:layout_marginBottom="@dimen/_16sdp"
+                android:fontFamily="@font/gotham_book"
+                android:gravity="center"
+                android:text="@string/terms_privacy_text"
+                android:textSize="@dimen/_10sdp" />
+
+    </RelativeLayout>
+</layout>

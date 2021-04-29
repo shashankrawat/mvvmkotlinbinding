@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:padding="@dimen/_20sdp"
+                android:gravity="center"
+                android:animateLayoutChanges="true">
+
+    <EditText
+            android:id="@+id/phone_number_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/phone_number"
+            android:inputType="phone"
+            android:maxLength="14"
+            android:background="@drawable/edt_bg_1"
+            android:importantForAutofill="no"
+            android:padding="@dimen/_10sdp"/>
+    <EditText
+            android:id="@+id/pass_code_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/code"
+            android:gravity="center"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:inputType="number"
+            android:visibility="gone"
+            android:maxLength="6"
+            android:background="@drawable/edt_bg_1"
+            android:importantForAutofill="no"
+            android:padding="@dimen/_10sdp"/>
+
+    <Button
+            android:id="@+id/authenticate_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/send_code"
+            android:layout_marginTop="@dimen/_30sdp"/>
+
+</LinearLayout>

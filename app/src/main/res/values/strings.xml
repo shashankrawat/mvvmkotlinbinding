@@ -1,0 +1,41 @@
+<resources>
+    <string name="app_name">MyMVVMSample</string>
+
+    <!--Facebook app ids-->
+    <string name="facebook_app_id">1235510236620670</string>
+    <string name="fb_login_protocol_scheme">fb1235510236620670</string>
+
+    <!--Insta Integration-->
+    <string name="client_id">c7970c3198734d4abc06ff95f0e9cb55</string>
+    <string name="client_secret_id">bb6d4c4ed2604d3990aff264a742a2d2</string>
+    <string name="auth_url">https://api.instagram.com/oauth/authorize/</string>
+    <string name="base_url">https://api.instagram.com/</string>
+    <string name="redirect_url">http://www.wegile.com/instagram</string>
+    <string name="get_user_info_url">https://api.instagram.com/v1/users/self/?access_token=</string>
+
+    <!--App strings-->
+    <string name="back_button">Back button</string>
+    <string name="sign_in_tag">Let\'s Sign you in</string>
+    <string name="terms_privacy_text">By signing up, you agree to our <font color="#000"><a href='https://www.google.com'><b>terms of service</b></a></font>\n and <font color="#000"><a href='https://www.google.com'><b>privacy policy</b></a></font>.</string>
+    <string name="facebook_login_button">Facebook Login Button</string>
+    <string name="instagram_login_button">Instagram Login Button</string>
+    <string name="no_network">No network connection</string>
+    <string name="delete_desc">Are you sure you want to delete?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="phone_number">Phone number</string>
+    <string name="code">Code</string>
+    <string name="verify">Verify</string>
+    <string name="send_code">Send Code</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="sign_in">Sign In</string>
+    <string name="star">\u2605</string>
+    <string name="year">Year</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="choose_from">Choose From</string>
+    <string name="take_pic_using_camera">Use Camera</string>
+    <string name="choose_from_gallery">Choose from gallery</string>
+
+</resources>

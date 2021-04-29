@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/round_corner_bg_one"
+        android:gravity="center"
+        android:layout_gravity="center">
+
+
+    <TextView
+            android:id="@+id/titleText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:fontFamily="@font/oswald_regular"
+            android:gravity="center"
+            android:padding="@dimen/_5sdp"
+            android:textAllCaps="true"
+            android:textColor="@color/color_black"
+            android:textSize="@dimen/_14sdp" />
+
+
+    <TextView
+            android:id="@+id/title_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/titleText"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:fontFamily="@font/oswald_regular"
+            android:gravity="center"
+            android:padding="@dimen/_5sdp"
+            android:text="@string/delete_desc"
+            android:textColor="@color/color_black"
+            android:textSize="@dimen/_14sdp" />
+
+
+    <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/ok_btn"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40sdp"
+            android:text="@string/ok"
+            android:textSize="@dimen/_15sdp"
+            android:textColor="@color/color_white"
+            android:layout_marginStart="@dimen/_25sdp"
+            android:layout_marginEnd="@dimen/_25sdp"
+            android:layout_marginBottom="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:fontFamily="@font/oswald_regular"
+            android:background="@drawable/oval_corner_bg_one"
+            android:layout_below="@id/title_desc"/>
+
+</RelativeLayout>

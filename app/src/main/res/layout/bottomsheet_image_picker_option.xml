@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:background="@color/color_white">
+
+    <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/closeDialogBtn"
+            android:layout_width="@dimen/_30sdp"
+            android:layout_height="@dimen/_30sdp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/ic_cancel"
+            android:padding="@dimen/_9sdp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_marginEnd="@dimen/_5sdp"
+            android:layout_marginStart="@dimen/_5sdp"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/dialogTitle"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="@id/closeDialogBtn"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/closeDialogBtn"
+            app:layout_constraintBottom_toBottomOf="@id/closeDialogBtn"
+            android:gravity="center_vertical"
+            android:paddingStart="@dimen/_10sdp"
+            android:paddingEnd="@dimen/_10sdp"
+            android:text="@string/choose_from"
+            android:textSize="@dimen/_13sdp"
+            android:textColor="@color/color_black"
+            android:fontFamily="@font/gotham_medium"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/cameraChooseBtn"
+            android:layout_marginTop="8dp"
+            android:drawableLeft="@drawable/ic_camera"
+            android:drawableStart="@drawable/ic_camera"
+            android:text="@string/take_pic_using_camera"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/closeDialogBtn"
+            style="@style/ActionItem" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/galleryChooseBtn"
+            android:drawableLeft="@drawable/ic_gallery_icon"
+            android:drawableStart="@drawable/ic_gallery_icon"
+            android:text="@string/choose_from_gallery"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cameraChooseBtn"
+            style="@style/ActionItem" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
